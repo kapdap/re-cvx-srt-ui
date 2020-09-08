@@ -10,8 +10,8 @@ namespace SRTPluginUIRECVXWinForms
 {
     public class SRTPluginUIRECVXWinForms : IPluginUI
     {
-        internal static PluginInfo _Info = new PluginInfo();
-        public IPluginInfo Info => _Info;
+        internal static PluginInfo _info = new PluginInfo();
+        public IPluginInfo Info => _info;
         public string RequiredProvider => "SRTPluginProviderRECVX";
 
         private IPluginHostDelegates hostDelegates;
@@ -119,54 +119,6 @@ namespace SRTPluginUIRECVXWinForms
                 // Handle command-line parameters.
                 programSpecialOptions = new Options();
                 programSpecialOptions.GetOptions();
-
-                foreach (string arg in args)
-                {
-                    if (arg.Equals("--Help", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        StringBuilder message = new StringBuilder("Command-line arguments:\r\n\r\n");
-                        message.AppendFormat("{0}\r\n\t{1}\r\n\r\n", "--No-Titlebar", "Hide the titlebar and window frame.");
-                        message.AppendFormat("{0}\r\n\t{1}\r\n\r\n", "--Always-On-Top", "Always appear on top of other windows.");
-                        message.AppendFormat("{0}\r\n\t{1}\r\n\r\n", "--Transparent", "Make the background transparent.");
-                        message.AppendFormat("{0}\r\n\t{1}\r\n\r\n", "--ScalingFactor=n", "Set the inventory slot scaling factor on a scale of 0.0 to 1.0. Default: 0.75 (75%)");
-                        message.AppendFormat("{0}\r\n\t{1}\r\n\r\n", "--NoInventory", "Disables the inventory display.");
-                        message.AppendFormat("{0}\r\n\t{1}\r\n\r\n", "--NoEnemyHealth", "Disables the enemy health display.");
-                        message.AppendFormat("{0}\r\n\t{1}\r\n\r\n", "--DirectX", "Enables the DirectX overlay.");
-                        message.AppendFormat("{0}\r\n\t{1}\r\n\r\n", "--Debug", "Debug mode.");
-                        message.AppendFormat("{0}\r\n\t{1}\r\n\r\n", "--DebugEnemy", "Enemy debug mode.");
-
-                        MessageBox.Show(null, message.ToString().Trim(), string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        Environment.Exit(0);
-                    }
-
-                    if (arg.Equals("--No-Titlebar", StringComparison.InvariantCultureIgnoreCase))
-                        programSpecialOptions.Flags |= ProgramFlags.NoTitleBar;
-
-                    if (arg.Equals("--Always-On-Top", StringComparison.InvariantCultureIgnoreCase))
-                        programSpecialOptions.Flags |= ProgramFlags.AlwaysOnTop;
-
-                    if (arg.Equals("--Transparent", StringComparison.InvariantCultureIgnoreCase))
-                        programSpecialOptions.Flags |= ProgramFlags.Transparent;
-
-                    if (arg.Equals("--NoInventory", StringComparison.InvariantCultureIgnoreCase))
-                        programSpecialOptions.Flags |= ProgramFlags.NoInventory;
-
-                    if (arg.Equals("--NoEnemyHealth", StringComparison.InvariantCultureIgnoreCase))
-                        programSpecialOptions.Flags |= ProgramFlags.NoEnemyHealth;
-
-                    if (arg.Equals("--DirectX", StringComparison.InvariantCultureIgnoreCase))
-                        programSpecialOptions.Flags |= ProgramFlags.DirectXOverlay;
-
-                    if (arg.StartsWith("--ScalingFactor=", StringComparison.InvariantCultureIgnoreCase))
-                        if (!double.TryParse(arg.Split(new char[1] { '=' }, 2, StringSplitOptions.None)[1], out programSpecialOptions.ScalingFactor))
-                            programSpecialOptions.ScalingFactor = 0.75d; // Default scaling factor for the inventory images. If we fail to process the user input, ensure this gets set to the default value just in case.
-
-                    if (arg.Equals("--Debug", StringComparison.InvariantCultureIgnoreCase))
-                        programSpecialOptions.Flags |= ProgramFlags.Debug;
-
-                    if (arg.Equals("--DebugEnemy", StringComparison.InvariantCultureIgnoreCase))
-                        programSpecialOptions.Flags |= ProgramFlags.DebugEnemy;
-                }
 
                 // Set item slot sizes after scaling is determined.
                 INV_SLOT_WIDTH = (int)Math.Round(112d * programSpecialOptions.ScalingFactor, MidpointRounding.AwayFromZero); // Individual inventory slot width.

@@ -15,16 +15,9 @@ namespace SRTPluginUIRECVXWinForms
     public partial class MainUI : Form
     {
         // How often to perform more expensive operations.
-        // 2000 milliseconds for updating pointers.
-        // 333 milliseconds for a full scan.
         // 16 milliseconds for a slim scan.
-        public const long OVER_UPDATE_TICKS = TimeSpan.TicksPerMillisecond * 3000L;
-        public const long LONG_UPDATE_TICKS = TimeSpan.TicksPerMillisecond * 2000L;
         public const long FULL_UI_DRAW_TICKS = TimeSpan.TicksPerMillisecond * 333L;
-        public const double SLIM_UI_DRAW_MS = 16d;
 
-        private long lastOverUpdate;
-        private long lastLongUpdate;
         private long lastFullUIDraw;
 
         // Quality settings (high performance).
@@ -110,8 +103,6 @@ namespace SRTPluginUIRECVXWinForms
                     Width = playerHealthStatus.Width + borderWidth;
             }
 
-            lastOverUpdate = DateTime.UtcNow.Ticks;
-            lastLongUpdate = DateTime.UtcNow.Ticks;
             lastFullUIDraw = DateTime.UtcNow.Ticks;
         }
 
@@ -396,7 +387,6 @@ namespace SRTPluginUIRECVXWinForms
             }
         }
 
-        // Customisation in future?
         private Brush backBrushGDI = new SolidBrush(Color.FromArgb(255, 60, 60, 60));
         private Brush foreBrushGDI = new SolidBrush(Color.FromArgb(255, 100, 0, 0));
 
@@ -438,19 +428,6 @@ namespace SRTPluginUIRECVXWinForms
         {
             if (e.Button == MouseButtons.Left)
                 PInvoke.DragControl(((Form)sender).Handle);
-        }
-
-        private void CloseForm()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new Action(() =>
-                {
-                    Close();
-                }));
-            }
-            else
-                Close();
         }
     }
 }
