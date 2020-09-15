@@ -44,10 +44,10 @@ namespace SRTPluginUIRECVXWinForms
             // Set titlebar.
             Text += string.Format(" {0}", Program.srtVersion);
 
-            ContextMenuStrip = SRTPluginUIRECVXWinForms.contextMenuStrip;
-            playerHealthStatus.ContextMenuStrip = SRTPluginUIRECVXWinForms.contextMenuStrip;
-            statisticsPanel.ContextMenuStrip = SRTPluginUIRECVXWinForms.contextMenuStrip;
-            inventoryPanel.ContextMenuStrip = SRTPluginUIRECVXWinForms.contextMenuStrip;
+            ContextMenuStrip = PluginUI.contextMenuStrip;
+            playerHealthStatus.ContextMenuStrip = PluginUI.contextMenuStrip;
+            statisticsPanel.ContextMenuStrip = PluginUI.contextMenuStrip;
+            inventoryPanel.ContextMenuStrip = PluginUI.contextMenuStrip;
 
             //GDI+
             playerHealthStatus.Paint += playerHealthStatus_Paint;
@@ -208,48 +208,35 @@ namespace SRTPluginUIRECVXWinForms
                 return;
             }
 
-            Brush brush = null;
-            if (gameMemory.Player.Gassed)
+            Brush brush = Brushes.LawnGreen;
+
+            if (gameMemory.Player.IsGassed)
+            {
                 brush = Brushes.Purple;
-            else if (gameMemory.Player.Poison)
+                playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.POISON, "POISON");
+            }
+            else if(gameMemory.Player.IsPoison)
+            {
                 brush = Brushes.Violet;
-
-            if (gameMemory.Player.CurrentHP < 30) // Danger (Red)
-            {
-                if (brush == null) brush = Brushes.Red;
-
-                if (gameMemory.Player.Poison || gameMemory.Player.Gassed)
-                    playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.POISON, "POISON");
-                else
-                    playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.DANGER, "DANGER");
+                playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.POISON, "POISON");
             }
-            else if (gameMemory.Player.CurrentHP < 60) // Caution (Orange)
+            else if (gameMemory.Player.IsDanger)
             {
-                if (brush == null) brush = Brushes.Gold;
-
-                if (gameMemory.Player.Poison || gameMemory.Player.Gassed)
-                    playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.POISON, "POISON");
-                else
-                    playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.CAUTION_YELLOW, "CAUTION_YELLOW"); // TODO: Orange image
+                brush = Brushes.Red;
+                playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.DANGER, "DANGER");
             }
-            else if (gameMemory.Player.CurrentHP < 120) // Caution (Yellow)
+            else if (gameMemory.Player.IsCautionOrange)
             {
-                if (brush == null) brush = Brushes.Goldenrod;
-
-                if (gameMemory.Player.Poison || gameMemory.Player.Gassed)
-                    playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.POISON, "POISON");
-                else
-                    playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.CAUTION_YELLOW, "CAUTION_YELLOW");
+                brush = Brushes.Gold;
+                playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.CAUTION_YELLOW, "CAUTION_YELLOW");
             }
-            else // Fine (Green)
+            else if (gameMemory.Player.IsCautionYellow)
             {
-                if (brush == null) brush = Brushes.LawnGreen;
-
-                if (gameMemory.Player.Poison || gameMemory.Player.Gassed)
-                    playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.POISON, "POISON");
-                else
-                    playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.FINE, "FINE");
+                brush = Brushes.Goldenrod;
+                playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.CAUTION_YELLOW, "CAUTION_YELLOW");
             }
+            else
+                playerHealthStatus.ThreadSafeSetHealthImage(Properties.Resources.FINE, "FINE");
 
             e.Graphics.DrawString(gameMemory.Player.CurrentHP.ToString(), healthFont, brush, 15, 37, stdStringFormat);
         }
@@ -269,10 +256,10 @@ namespace SRTPluginUIRECVXWinForms
 
                 foreach (InventoryEntry inv in gameMemory.Player.Inventory)
                 {
-                    if ((inv.Slot == 0 || inv.Slot == 1) && inv.IsEmptySlot)
+                    if ((inv.Slot == 0 || inv.Slot == 1) && inv.IsEmpty)
                         currentSlot++;
 
-                    if (inv == default || inv.IsEmptySlot)
+                    if (inv == default || inv.IsEmpty)
                         continue;
 
                     currentSlot++;
@@ -296,8 +283,8 @@ namespace SRTPluginUIRECVXWinForms
                         textBrush = Brushes.Red;
 
                     TextureBrush imageBrush;
-                    if (Program.ItemToImageTranslation.ContainsKey(inv.ItemID))
-                        imageBrush = new TextureBrush(inventoryImage, Program.ItemToImageTranslation[inv.ItemID]);
+                    if (Program.ItemToImageTranslation.ContainsKey(inv.Type))
+                        imageBrush = new TextureBrush(inventoryImage, Program.ItemToImageTranslation[inv.Type]);
                     else
                         imageBrush = new TextureBrush(inventoryError, new Rectangle(0, 0, Program.INV_SLOT_WIDTH, Program.INV_SLOT_HEIGHT));
 
@@ -347,16 +334,12 @@ namespace SRTPluginUIRECVXWinForms
             {
                 e.Graphics.DrawString("T:" + gameMemory.IGT.RunningTimer.ToString("0000000000"), new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 25, stdStringFormat);
                 e.Graphics.DrawString("C:" + gameMemory.Version.Code, new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 38, stdStringFormat);
+                e.Graphics.DrawString("P:" + gameMemory.Process.ProcessName, new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 51, stdStringFormat);
+                e.Graphics.DrawString("I:" + gameMemory.Process.Id, new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 64, stdStringFormat);
                 heightOffset = 56; // Adding an additional offset to accomdate Raw IGT.
             }
 
-            string status = "Normal";
-            if (gameMemory.Player.Gassed)
-                status = "Gassed";
-            else if (gameMemory.Player.Poison)
-                status = "Poison";
-
-            e.Graphics.DrawString("Status: " + status, new Font("Consolas", 10, FontStyle.Bold), Brushes.White, 0, heightOffset + 25, stdStringFormat);
+            e.Graphics.DrawString("Status: " + gameMemory.Player.StatusName, new Font("Consolas", 10, FontStyle.Bold), Brushes.White, 0, heightOffset + 25, stdStringFormat);
             e.Graphics.DrawString("Saves: " + gameMemory.Player.Saves, new Font("Consolas", 10, FontStyle.Bold), Brushes.White, 0, heightOffset + 38, stdStringFormat);
             e.Graphics.DrawString("Retry: " + gameMemory.Player.Retry, new Font("Consolas", 10, FontStyle.Bold), Brushes.White, 0, heightOffset + 51, stdStringFormat);
             heightOffset += 39;
@@ -365,12 +348,12 @@ namespace SRTPluginUIRECVXWinForms
             {
                 e.Graphics.DrawString("Enemy HP", new Font("Consolas", 10, FontStyle.Bold), Brushes.Red, 0, heightOffset + (heightGap * ++i), stdStringFormat);
 
-                List<EnemyEntry> enemyList = gameMemory.Enemy;
+                List<EnemyEntry> enemyList = gameMemory.Enemy.ToList();
 
                 if (Program.programSpecialOptions.Flags.HasFlag(ProgramFlags.DebugEnemy))
-                    enemyList = enemyList.OrderBy(a => a.Slot).ToList();
+                    enemyList = enemyList.Where(a => !a.IsEmpty).OrderBy(a => a.Slot).ToList();
                 else
-                    enemyList = enemyList.Where(a => a.IsAlive).OrderBy(a => a.Percentage).ThenByDescending(a => a.CurrentHP).ToList();
+                    enemyList = enemyList.Where(a => a.IsAlive && !a.IsEmpty).OrderBy(a => a.Percentage).ThenByDescending(a => a.CurrentHP).ToList();
 
                 foreach (EnemyEntry enemy in enemyList)
                 {

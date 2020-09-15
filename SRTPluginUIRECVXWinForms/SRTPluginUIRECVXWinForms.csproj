@@ -9,7 +9,7 @@
     <Description>A user-interface plugin to display the values provided by the Resident Evil: Code: Veronica Memory Provider Plugin in a WinForms window.</Description>
     <Copyright>Copyright © 2020 Kapdap</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/kapdap/re-cvx-srt-ui</RepositoryUrl>
+    <RepositoryUrl>https://github.com/kapdap/re-cvx-srt-ui-winforms</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>speedrun</PackageTags>
     <Version>0.9.0.0</Version>

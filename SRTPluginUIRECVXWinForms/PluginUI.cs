@@ -8,13 +8,13 @@ using System.Windows.Forms;
 
 namespace SRTPluginUIRECVXWinForms
 {
-    public class SRTPluginUIRECVXWinForms : IPluginUI
+    public class PluginUI : IPluginUI
     {
         internal static PluginInfo _info = new PluginInfo();
         public IPluginInfo Info => _info;
         public string RequiredProvider => "SRTPluginProviderRECVX";
 
-        private IPluginHostDelegates hostDelegates;
+        private IPluginHostDelegates _hostDelegates;
         private ApplicationContext applicationContext;
         private Task applicationTask;
         public static ContextMenuStrip contextMenuStrip;
@@ -24,7 +24,7 @@ namespace SRTPluginUIRECVXWinForms
         [STAThread]
         public int Startup(IPluginHostDelegates hostDelegates)
         {
-            this.hostDelegates = hostDelegates;
+            _hostDelegates = hostDelegates;
 
             if (!oneTimeInit)
             {
@@ -50,7 +50,7 @@ namespace SRTPluginUIRECVXWinForms
             }));
 
             // Call the legacy code initialization.
-            Program.Main(new string[0]);
+            Program.Main();
 
             // Create and start the form.
             applicationContext = new ApplicationContext(new MainUI());
@@ -78,7 +78,6 @@ namespace SRTPluginUIRECVXWinForms
                         applicationContext.MainForm.Close();
                         applicationContext.MainForm.Dispose();
                     }));
-                    applicationContext.MainForm = null;
                 }
 
                 applicationContext.Dispose();
@@ -112,7 +111,7 @@ namespace SRTPluginUIRECVXWinForms
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        public static void Main(string[] args)
+        public static void Main()
         {
             try
             {

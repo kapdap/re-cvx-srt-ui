@@ -11,7 +11,7 @@ namespace SRTPluginUIRECVXWinForms
 
         public string Author => "Kapdap";
 
-        public Uri MoreInfoURL => new Uri("https://github.com/kapdap/re-cvx-srt-ui");
+        public Uri MoreInfoURL => new Uri("https://github.com/kapdap/re-cvx-srt-ui-winforms");
 
         public int VersionMajor => assemblyFileVersion.ProductMajorPart;
 
