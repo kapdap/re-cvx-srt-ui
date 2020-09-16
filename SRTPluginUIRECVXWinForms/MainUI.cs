@@ -241,9 +241,57 @@ namespace SRTPluginUIRECVXWinForms
             e.Graphics.DrawString(gameMemory.Player.CurrentHP.ToString(), healthFont, brush, 15, 37, stdStringFormat);
         }
 
+        private void equipmentPanel_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = smoothingMode;
+            e.Graphics.CompositingQuality = compositingQuality;
+            e.Graphics.CompositingMode = compositingMode;
+            e.Graphics.InterpolationMode = interpolationMode;
+            e.Graphics.PixelOffsetMode = pixelOffsetMode;
+            e.Graphics.TextRenderingHint = textRenderingHint;
+
+            InventoryEntry inv = gameMemory.Player.Equipment;
+
+            if (inv == default || inv.IsEmpty)
+                return;
+
+            int imageX = Program.INV_SLOT_WIDTH / 2;
+            int imageY = 0;
+            int textX = imageX + Program.INV_SLOT_WIDTH;
+            int textY = imageY + Program.INV_SLOT_HEIGHT;
+            Brush textBrush = Brushes.White;
+
+            if (inv.Quantity == 0)
+                textBrush = Brushes.DarkRed;
+            else if (inv.IsAcid)
+                textBrush = Brushes.Yellow;
+            else if (inv.IsBOW)
+                textBrush = Brushes.Green;
+            else if (inv.IsFlame)
+                textBrush = Brushes.Red;
+
+            TextureBrush imageBrush;
+            if (Program.ItemToImageTranslation.ContainsKey(inv.Type))
+                imageBrush = new TextureBrush(inventoryImage, Program.ItemToImageTranslation[inv.Type]);
+            else
+                imageBrush = new TextureBrush(inventoryError, new Rectangle(0, 0, Program.INV_SLOT_WIDTH, Program.INV_SLOT_HEIGHT));
+
+            imageBrush.TranslateTransform(Program.INV_SLOT_WIDTH / 2, 0);
+
+            // Double-slot item.
+            if (imageBrush.Image.Width == Program.INV_SLOT_WIDTH * 2)
+            {
+                imageBrush.TranslateTransform(Program.INV_SLOT_WIDTH / 3 + Program.INV_SLOT_WIDTH, 0);
+                imageX -= Program.INV_SLOT_WIDTH / 2;
+            }
+
+            e.Graphics.FillRectangle(imageBrush, imageX, imageY, imageBrush.Image.Width, imageBrush.Image.Height);
+            e.Graphics.DrawString(!inv.IsInfinite ? inv.Quantity.ToString() : "∞", new Font("Consolas", 14, FontStyle.Bold), textBrush, textX, textY, invStringFormat);
+        }
+
         private void inventoryPanel_Paint(object sender, PaintEventArgs e)
         {
-            int currentSlot = -1;
+            int currentSlot = 0;
 
             if (!Program.programSpecialOptions.Flags.HasFlag(ProgramFlags.NoInventory))
             {
@@ -253,6 +301,8 @@ namespace SRTPluginUIRECVXWinForms
                 e.Graphics.InterpolationMode = interpolationMode;
                 e.Graphics.PixelOffsetMode = pixelOffsetMode;
                 e.Graphics.TextRenderingHint = textRenderingHint;
+
+                equipmentPanel_Paint(sender, e);
 
                 foreach (InventoryEntry inv in gameMemory.Player.Inventory)
                 {
@@ -291,19 +341,11 @@ namespace SRTPluginUIRECVXWinForms
                     imageBrush.TranslateTransform(Program.INV_SLOT_WIDTH / 2, 0);
 
                     // Double-slot item.
-                    if (imageBrush.Image.Width == Program.INV_SLOT_WIDTH * 2 && inv.Slot != 1)
+                    if (imageBrush.Image.Width == Program.INV_SLOT_WIDTH * 2)
                     {
-                        if (inv.Slot == 0)
-                        {
-                            imageBrush.TranslateTransform(Program.INV_SLOT_WIDTH / 3 + Program.INV_SLOT_WIDTH, 0);
-                            imageX -= Program.INV_SLOT_WIDTH / 2;
-                        }
-                        else
-                        {
-                            // Shift the quantity text over into the 2nd slot's area.
-                            textX += Program.INV_SLOT_WIDTH;
-                            currentSlot++;
-                        }
+                        // Shift the quantity text over into the 2nd slot's area.
+                        textX += Program.INV_SLOT_WIDTH;
+                        currentSlot++;
                     }
 
                     e.Graphics.FillRectangle(imageBrush, imageX, imageY, imageBrush.Image.Width, imageBrush.Image.Height);
