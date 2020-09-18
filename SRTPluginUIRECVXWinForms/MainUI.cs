@@ -376,8 +376,8 @@ namespace SRTPluginUIRECVXWinForms
             {
                 e.Graphics.DrawString("T:" + gameMemory.IGT.RunningTimer.ToString("0000000000"), new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 25, stdStringFormat);
                 e.Graphics.DrawString("C:" + gameMemory.Version.Code, new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 38, stdStringFormat);
-                e.Graphics.DrawString("P:" + gameMemory.Process.ProcessName, new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 51, stdStringFormat);
-                e.Graphics.DrawString("I:" + gameMemory.Process.Id, new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 64, stdStringFormat);
+                e.Graphics.DrawString("P:" + gameMemory.Emulator.ProcessName, new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 51, stdStringFormat);
+                e.Graphics.DrawString("I:" + gameMemory.Emulator.Id, new Font("Consolas", 9, FontStyle.Bold), Brushes.Gray, 0, 64, stdStringFormat);
                 heightOffset = 56; // Adding an additional offset to accomdate Raw IGT.
             }
 
