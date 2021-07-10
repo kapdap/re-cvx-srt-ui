@@ -17,6 +17,7 @@
     <AssemblyVersion>0.9.1.0</AssemblyVersion>
     <UseWindowsForms>true</UseWindowsForms>
     <OutputType>Library</OutputType>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <OutputPath>bin\$(Configuration)\$(AssemblyName)\</OutputPath>
