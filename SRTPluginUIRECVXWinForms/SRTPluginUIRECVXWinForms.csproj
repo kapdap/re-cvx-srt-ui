@@ -17,8 +17,6 @@
     <AssemblyVersion>0.9.1.0</AssemblyVersion>
     <UseWindowsForms>true</UseWindowsForms>
     <OutputType>Library</OutputType>
-    <CopyDestionationPath>$(SolutionDir)..\..\..\Squirrelies\SRTHost\SRTHost\bin\$(Configuration)\net5.0-windows\plugins</CopyDestionationPath>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <OutputPath>bin\$(Configuration)\$(AssemblyName)\</OutputPath>
@@ -55,13 +53,5 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
-  <Target Name="CopyOutputToDestination" AfterTargets="AfterBuild">
-    <ItemGroup>
-      <OutputFiles Include="$(OutDir)**\*"></OutputFiles>
-    </ItemGroup>
-    <Message Text="Copying files: @(OutputFiles)" Importance="high" />
-    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(CopyDestionationPath)\$(ProjectName)\%(RecursiveDir)" OverwriteReadOnlyFiles="true"></Copy>
-  </Target>
 
 </Project>
